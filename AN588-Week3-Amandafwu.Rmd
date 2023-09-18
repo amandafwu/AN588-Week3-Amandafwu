@@ -1,0 +1,64 @@
+---
+title: "AN588-Week3-Amandafwu"
+author: "Amanda Wu"
+date: "2023-09-18"
+output: html_document
+---
+```{r Challenge 1}
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/Country-Data-2016.csv") #curl function is similar to url 
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE) #read.csv reads a file in table format and creates a data frame 
+head(d) #loads first 6 lines of the dataset
+summary(d)
+names(d)
+#What are the median area and population size of all countries in the dataset?
+attach(d, pos = 3, name = "area") #used attach() to make variables within the dataset so median can be taken from a particular column; pos = 3 means column 3 of the dataset 
+median(area, na.rm = TRUE,) #added na.rm = TRUE from the module 
+attach(d, pos = 2, name = "population") #used same pattern for population 
+median(population, na.rm = TRUE)
+
+#Create a new pop_density variable in your data frame. What are the 10 most dense countries? The 10 least dense?
+d$density <- d$population/d$area
+d <- d[order(-d$density), ]
+d[1:10, ]
+d <- d[order(d$density), ]
+d[1:10, ]
+# 10 most dense countries: Macau, Monaco, Holy See, Singapore, Hong Kong, Gibraltar, Bahrain, Maldives, Malta, Bermuda 
+# 10 least dense countries: South Georgia, Greenland, Falkland Islands, Pitcairn Islands, Mongolia, Western Sahara, French Guiana, Namibia, Australia, Iceland 
+
+#Extract data from the 20 largest countries into a new variable. What are the median area and population size of these countries?
+e <- attach(d, pos = 2, name = "population")
+v <- e[1:20]
+median(population, na.rm = TRUE)
+###CANT GET THIS TO WORK !!!!!!!!!!!
+
+#Extract data from all countries beginning with the letters “A” through “F”. What are the mean area and population size of these countries?
+new <- d[grep("^[A-F]", d$country), ] 
+summary(new)
+mean(new$population, na.rm = TRUE)
+mean(new$area, na.rm = TRUE)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
