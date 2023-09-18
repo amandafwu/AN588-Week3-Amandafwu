@@ -39,8 +39,15 @@ mean(new$population, na.rm = TRUE)
 mean(new$area, na.rm = TRUE)
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r Challenge 2}
+par(mfrow = c(2, 3))
+boxplot(d$population)
+boxplot(log(d$population))
+boxplot(d$area)
+boxplot(log(d$area))
+barplot(d$population)
+barplot(d$area)
 ```
 
 ## R Markdown
