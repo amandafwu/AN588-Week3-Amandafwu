@@ -212,6 +212,94 @@ s
 #Compare the body size of my two main study taxa at the Family level (i.e., Cercopithecidae vs. Atelidae) by plotting (using {ggplot2}) the body mass of males and females and sexual dimorphism. If you can, make the Cercopithecid boxes green, and the Atelid boxes purple.
 ```
 
+
+
+# Module 7 Challenges 
+## Challenge 1
+```{r Challenge 1}
+#Given a vector, x <- c(1,2,3,4,5,6,7,8,9,10,100,1000), write a function to determine the geometric mean of the values in a vector
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000)
+gm1 <- function(x) {
+    prod(x)^(1/length(x))
+}
+gm1(x)
+gm2 <- function(x) {
+    exp(mean(log(x)))
+}
+gm2(x)
+#What happens if you have NAs or zeros or negative numbers in the vector? 
+z <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000, 0)
+gm1 <- function(z) {
+    prod(z)^(1/length(z))
+}
+gm1(z) #when adding 0, it'll determine the geometric mean to be 0
+
+m <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000, -5)
+gm1 <- function(m) {
+    prod(m)^(1/length(m))
+}
+gm1(m) #when adding a negative, it'll determine the geometric mean to be NaN
+```
+
+
+## Challenge 2
+```{r Challenge 2}
+#Write a function to calculate the sum of squares for a vector
+ss1 <- function(x) {
+    sum((x - mean(x))^2)
+}
+ss1(x)
+#same as
+ss2 <- function(x) {
+    sum(x^2) - length(x) * mean(x)^2
+}
+ss2(x)
+#same as
+ss3 <- function(x) {
+    sum(x^2) - (sum(x))^2/length(x)
+}
+ss3(x)
+pop_v <- function(x) {
+    sum((x - mean(x))^2)/(length(x))
+}
+pop_v(x)
+```
+
+
+## Challenge 3
+```{r Challenge 3}
+sample_v <- function(x) {
+    sum((x - mean(x))^2)/(length(x) - 1)
+}
+sample_v(x)
+plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample size", ylab = "Variance") #setting up a plot
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
+{
+    for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
+    {
+        x <- rnorm(n, mean = 10, sd = 2)
+        points(n, var(x))
+    }
+} #Error in plot. xy(xy.coords(x, y), type = type, ...): plot.new has not been called yet?
+pop_sd <- function(x) {
+    sqrt(pop_v(x))
+}
+pop_sd(x)
+
+sample_sd <- function(x) {
+    sqrt(sample_v(x))
+}
+sample_sd(x)
+```
+
+
+## Challenge 4
+
+
+
+
 ## Troubleshooting:
 * Module 6 Challenge 3:
   + Error: "error in plot.xy(xy.coords(x, y), type = type, ...) : plot.new has not been called yet"
