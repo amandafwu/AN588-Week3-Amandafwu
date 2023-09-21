@@ -4,21 +4,26 @@ author: "Amanda Wu"
 date: "2023-09-18"
 output: html_document
 ---
+
+# Module 6 Challenges
+## Challenge 1
 ```{r Challenge 1}
 library(curl)
 f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/Country-Data-2016.csv") #curl function is similar to url 
-d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE) #read.csv reads a file in table format and creates a data frame 
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)#read.csv reads a file in table format and creates a data frame 
 head(d) #loads first 6 lines of the dataset
-summary(d)
-names(d)
+summary(d) #offers quick overview of the columns
+names(d) #offers names of the columns
+
 #What are the median area and population size of all countries in the dataset?
 attach(d, pos = 3, name = "area") #used attach() to make variables within the dataset so median can be taken from a particular column; pos = 3 means column 3 of the dataset 
 median(area, na.rm = TRUE,) #added na.rm = TRUE from the module 
 attach(d, pos = 2, name = "population") #used same pattern for population 
 median(population, na.rm = TRUE)
+detach(area) #module said we had to detach after we attach when finished with the function
 
 #Create a new pop_density variable in your data frame. What are the 10 most dense countries? The 10 least dense?
-d$density <- d$population/d$area
+d$density <- d$population/d$area #made a new pop_density variable
 d <- d[order(-d$density), ]
 d[1:10, ]
 d <- d[order(d$density), ]
@@ -27,62 +32,198 @@ d[1:10, ]
 # 10 least dense countries: South Georgia, Greenland, Falkland Islands, Pitcairn Islands, Mongolia, Western Sahara, French Guiana, Namibia, Australia, Iceland 
 
 #Extract data from the 20 largest countries into a new variable. What are the median area and population size of these countries?
-e <- attach(d, pos = 2, name = "population")
-v <- e[1:20]
+largest <- head(d[order(-d$area), ], 20) #head gets the first rows, order puts it in descending order
+largest
+names(largest) #shows the names/positions of each column for attach
+attach(largest, pos = 3, name = "area" ) #same process as before
+median(area, na.rm = TRUE)
+detach(area)
+attach(largest, pos = 2, name = "population" )
 median(population, na.rm = TRUE)
-###CANT GET THIS TO WORK !!!!!!!!!!!
+detach(population)
+
 
 #Extract data from all countries beginning with the letters “A” through “F”. What are the mean area and population size of these countries?
-new <- d[grep("^[A-F]", d$country), ] 
+new <- d[grep("^[A-F]", d$country), ]  #grep: used to take out patterns within a column? 
 summary(new)
 mean(new$population, na.rm = TRUE)
 mean(new$area, na.rm = TRUE)
 ```
 
-
+## Challenge 2
 ```{r Challenge 2}
+#The barplot() function is useful for crude data, with bar height proportional to the value of the variable. The function dotchart() provides a similar graphical summary.
 #code given from the module
 par(mfrow = c(2, 3))
+#par() sets up a grid of panels for you to plot
 boxplot(d$population)
 boxplot(log(d$population))
+#adding log() transforms it into a box & whiskers graph?
 boxplot(d$area)
 boxplot(log(d$area))
 barplot(d$population)
 barplot(d$area)
 ```
 
-
+## Challenge 3
 ```{r Challenge 3}
-par(mfrow = c(1, 2))  # gives us two panels
+#hist() function returns a histogram showing the complete empirical distribution of the data in binned categories, which is useful for checking skewwness of the data, symmetry, multi-modality, etc.
+par(mfrow = c(1, 2))  #gives two panels
 attach(d)
 hist(log(population), freq = FALSE, col = "red", main = "Plot 1", xlab = "log(population size)",
     ylab = "density", ylim = c(0, 0.2))
-hist(log(area), freq = FALSE, col = "red", main = "Plot 2", xlab = "log(area)",
+#vs
+hist(log(population), freq = TRUE, col = "red", main = "Plot 1", xlab = "log(population size)",
+    ylab = "density", ylim = c(0, 0.2)) 
+#freq = FALSE scaled the y axis so you can see the proportions while freq = TRUE does not scale so it looked like a bunch of full bars with no difference
+hist(log(area), freq = TRUE, col = "red", main = "Plot 2", xlab = "log(area)",
     ylab = "density", ylim = c(0, 0.2))
 
 par(mfrow = c(1, 1))  # set up one panel and redraw the log(population) histogram
-hist(log(population), freq = FALSE, col = "white", main = "My Plot with Mean and Density",
+hist(log(population), freq = TRUE, col = "white", main = "My Plot with Mean and Density",
     xlab = "log(population size)", ylab = "density", ylim = c(0, 0.2))
-abline(v = mean(log(population), na.rm = TRUE), col = "blue")
+abline(v = mean(log(population), na.rm = TRUE), col = "blue") #code gives an error but will knit fine?
 lines(density(log(population), na.rm = TRUE), col = "green")
+detach(d)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Challenge 4
+```{r Challenge 4}
+#What is the most common form of government in the Country-Data-2016 dataset. How many countries have that form?
+sort(table(d$govt_form), decreasing = TRUE)
+#sort(): similar to order() for vectors
+#table(): summarize counts and proportions for categorical variables in your dataset
+#Answer: Republic is the most common form of government with 127 countries following under this form of government
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+## Challenge 5
+```{r Challenge 5}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/KamilarAndCooperData.csv")
+d <- read.csv(f, header = TRUE, stringsAsFactors = FALSE)
+attach(d)
+head(d)
+summary(d)
+boxplot(log(Body_mass_female_mean) ~ Family, d)
+detach(d)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+library(ggplot2)
+p <- ggplot(data = d, aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
+p <- p + geom_boxplot()  #graph them in a boxplot
+p <- p + theme(axis.text.x = element_text(angle = 90))  #put x-axis names at 90deg
+p <- p + ylab("log(Female Body Mass)")  #rename y-axis title
+p  #show me the graph
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Challenge 6
+```{r Challenge 6}
+#Scatterplots are a natural tool for visualizing two continuous variables and can be made easily with the plot(x=XXX, y=YYY) function in {base} graphics
+#Again using data from the KamilarAndCooperData dataset, plot the relationship between female body size and female brain size. Then, play with log transforming the data and plot again.
+attach(d)
+names(d) 
+par(mfrow = c(1, 2))
+plot(x = Body_mass_female_mean, y = Brain_Size_Female_Mean)
+plot(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean))
+#plotting relationship between WeaningAge_d and LitterSz
+par(mfrow = c(1,2))
+plot(x= log(WeaningAge_d), y = log(LitterSz))
+detach(d)
+
+#using package ggplot2
+p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean),
+    color = factor(Family)))  # first, we build a plot object and color points by Family
+p <- p + xlab("log(Female Body Mass)") + ylab("log(Female Brain Size)")  # then we modify the axis labels
+p <- p + geom_point()  # then we make a scatterplot
+p <- p + theme(legend.position = "bottom", legend.title = element_blank())  # then we modify the legend
+p  # and, finally, we plot the object
+#Warning message when loading this graph: "Warning: [38;5;232mRemoved 48 rows containing missing values(`geom_point()`).[39m"
+
+#using ggplot2 to set up a grid for "faceting"
+p <- p + facet_wrap(~Family, ncol = 4) #facet_wrap wraps a 1d sequence of panels into 2d 
+p <- p + theme(legend.position = "none")
+p
+
+#adding a linear regression model to each facet
+p <- p + geom_smooth(method = "lm", fullrange = TRUE)
+p
+```
+
+
+## Challenge 7 
+```{r Challenge 7}
+#Building a bivariate scatterplot
+p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(MaxLongevity_m)))
+p <- p + geom_point()
+p <- p + geom_smooth(method = "lm")
+p
+#aggregate() looks at summary statistics for more specific observations
+aggregate(d$Body_mass_female_mean ~ d$Family, FUN = "mean", na.rm = TRUE) #FUN = "mean" refers to mean female body mass, grouped by family
+#or
+aggregate(x = d["Body_mass_female_mean"], by = d["Family"], FUN = "mean", na.rm = TRUE) #difference between using ~ vs ", by"
+
+#using dplyr 
+library(dplyr)
+s <- filter(d, Family == "Hominidae" & Mass_Dimorphism > 2) #show species within the Family "Hominidae" and with a Mass Dismorphism greater than 2
+head(s)
+s <- arrange(d, Family, Genus, Body_mass_male_mean)  # rearranging a data frame
+head(s)
+s <- select(d, Family, Genus, Body_mass_male_mean)  # selecting specific columns
+head(s)
+s <- rename(d, Female_Mass = Body_mass_female_mean) #renaming the columns 
+head(s$Female_Mass) 
+s <- mutate(d, Binomial = paste(Genus, Species, sep = " ")) #adding new columns
+head(s$Binomial) 
+s <- summarise(d, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+    na.rm = TRUE)) 
+s
+byFamily <- group_by(d, Family) #function group_by() applies summary functions to sets of observations defined by a variable (similar to aggregate())
+byFamily 
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+    na.rm = TRUE))
+s
+#Piping with dplyr (%>%)
+s <-                                                             #to create dataframe "s"
+  d %>%                                                          #take dataframe "d"
+  group_by(Family) %>%                                           #Group it by Family
+  summarise(avgF = mean(Body_mass_female_mean, na.rm=TRUE),      #And calculate mean male BM
+            avgM = mean(Body_mass_male_mean, na.rm=TRUE))        #And mean female BM
+s
+```
+
+
+## Challenge 8
+```{r Challenge 8}
+#In one line of code, do the following:
+  #Add a variable, Binomial to our data frame d, which is a concatenation of the Genus and Species…
+  #Trim the data frame to only include the variables Binomial, Family, Body_mass_female_mean, Body_mass_male_mean and Mass_Dimorphism…
+  #Group these by Binomial (in other words, by species but with full binomial nomenclature)…
+  #And calculate the average value for female body mass, male body mass, and mass dimorphism.
+s <- d %>%
+    mutate(Binomial = paste(Genus, Species, sep = " ")) %>%
+    select(Binomial, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>%
+    group_by(Binomial) %>%
+    summarise(avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+        na.rm = TRUE), avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+s
+#Acccording to Kamilar & Cooper’s (2013) dataset, what is the average male and female size, and body mass dimorphism of my two main study species (vervet monkeys, Chlorocebus pygerythrus; and woolly monkeys, Lagothrix lagotricha)? Which has a larger average female body mass? Which is more sexually dimorphic?
+
+#Compare the body size of my two main study taxa at the Family level (i.e., Cercopithecidae vs. Atelidae) by plotting (using {ggplot2}) the body mass of males and females and sexual dimorphism. If you can, make the Cercopithecid boxes green, and the Atelid boxes purple.
+```
+
+## Troubleshooting:
+* Module 6 Challenge 3:
+  + Error: "error in plot.xy(xy.coords(x, y), type = type, ...) : plot.new has not been called yet"
+  ++ Occurs on code "abline(v = mean(log(population), na.rm = TRUE), col = "blue")"
+  
+* Module 6 Challenge 6:
+  + Warning when loading the scatterplot using ggplot "Warning: [38;5;232mRemoved 48 rows containing missing values(`geom_point()`).[39m"
+  ++ Will still knit and load fine though
+  + Warning when adding the regression models into the scatterplots
+  ++ "[38;5;232m`geom_smooth()` using formula = 'y ~ x'[39m
+Warning: [38;5;232mRemoved 48 rows containing non-finite values (`stat_smooth()`).[39m
+Warning: NaNs produced
+Warning: [38;5;232mRemoved 48 rows containing missing values (`geom_point()`).[39m
+Warning: no non-missing arguments to max; returning -Inf"
+  
